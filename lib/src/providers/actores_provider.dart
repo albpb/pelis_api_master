@@ -6,51 +6,49 @@ import 'dart:async';
 import 'package:scooby_app/src/models/actores_model.dart';
 import 'package:scooby_app/src/models/pelicula_model.dart';
 
-class PeliculasProvider {
-  String _apikey = 'ab85e2ec67c3e9d2e7970e8fd9c24fdd';
+class ActoresProvider {
+  String _apikey = '29b907d5ad39d88c1c1f53647f9e7e45';
   String _url = 'api.themoviedb.org';
   String _language = 'es-ES';
 
   int _popularesPage = 0;
   bool _cargando = false;
 
-  List<Pelicula> _populares = [];
+  List<Actor> _populares = [];
 
-  final _popularesStreamController =
-      StreamController<List<Pelicula>>.broadcast();
+  final _popularesStreamController = StreamController<List<Actor>>.broadcast();
 
-  Function(List<Pelicula>) get popularesSink =>
+  Function(List<Actor>) get popularesSink =>
       _popularesStreamController.sink.add;
 
-  Stream<List<Pelicula>> get popularesStream =>
-      _popularesStreamController.stream;
+  Stream<List<Actor>> get popularesStream => _popularesStreamController.stream;
 
   void disposeStreams() {
     _popularesStreamController?.close();
   }
 
-  Future<List<Pelicula>> _procesarRespuesta(Uri url) async {
+  Future<List<Actor>> _procesarRespuesta(Uri url) async {
     final resp = await http.get(url);
     final decodedData = json.decode(resp.body);
 
-    final peliculas = new Peliculas.fromJsonList(decodedData['results']);
+    final actores = new Actores.fromJsonList(decodedData['results']);
 
-    return peliculas.items;
+    return actores.actores;
   }
 
-  Future<List<Pelicula>> getEnCines() async {
-    final url = Uri.https(_url, '3/movie/now_playing',
+  Future<List<Actor>> getActores() async {
+    final url = Uri.https(_url, '3/person',
         {'api_key': _apikey, 'language': _language}); // Pelicula
     return await _procesarRespuesta(url);
   }
 
-  Future<List<Pelicula>> getPopulares() async {
+  Future<List<Actor>> getPopulares() async {
     if (_cargando) return [];
 
     _cargando = true;
     _popularesPage++;
 
-    final url = Uri.https(_url, '3/movie/popular', {
+    final url = Uri.https(_url, '3/person/popular', {
       'api_key': _apikey,
       'language': _language,
       'page': _popularesPage.toString()
@@ -64,20 +62,20 @@ class PeliculasProvider {
     return resp;
   }
 
-  Future<List<Actor>> getCast(String peliId) async {
-    final url = Uri.https(_url, '3/movie/$peliId/credits',
+  Future<List<Pelicula>> getCast(String personId) async {
+    final url = Uri.https(_url, '3/person/$personId/movie_credits',
         {'api_key': _apikey, 'language': _language}); // pelicula
 
     final resp = await http.get(url);
     final decodedData = json.decode(resp.body);
 
-    final cast = new Actores.fromJsonList(decodedData['cast']);
+    final peliculas = new Peliculas.fromJsonList(decodedData['cast']);
 
-    return cast.actores;
+    return peliculas.items;
   }
 
-  Future<List<Pelicula>> buscarPelicula(String query) async {
-    final url = Uri.https(_url, '3/search/movie', {
+  Future<List<Actor>> buscarPelicula(String query) async {
+    final url = Uri.https(_url, '3/search/person', {
       'api_key': _apikey,
       'language': _language,
       'query': query

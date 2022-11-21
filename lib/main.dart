@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:scooby_app/src/pages/home_page.dart';
+import 'package:scooby_app/src/pages/home_page_actores.dart';
 import 'package:scooby_app/src/pages/pelicula_detalle.dart';
 
 void main() => runApp(MyApp());
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Peliculas TMDB',
       initialRoute: '/',
       routes: {
-        '/': (BuildContext context) => HomePage(),
+        '/': (BuildContext context) => HomePageActores(),
         'detalle': (BuildContext context) => PeliculaDetalle(),
       },
     );
