@@ -33,32 +33,49 @@ class ActoresProvider {
 
     final actores = new Actores.fromJsonList(decodedData['results']);
 
+    for (var i = 0; i < actores.actores.length; i++) {
+      var respDesc = await http.get(Uri.https(
+          _url,
+          '3/person/' + actores.actores[i].id.toString(),
+          {'api_key': _apikey, 'language': _language}));
+      var dataDesc = await json.decode(respDesc.body);
+
+      actores.actores[i].description = dataDesc["biography"];
+    }
+
     return actores.actores;
   }
 
   Future<List<Actor>> getActores() async {
-    final url = Uri.https(_url, '3/person',
+    final url = Uri.https(_url, '3/person/',
         {'api_key': _apikey, 'language': _language}); // Pelicula
     return await _procesarRespuesta(url);
   }
 
   Future<List<Actor>> getPopulares() async {
-    if (_cargando) return [];
+    /*if (_cargando) return [];
 
     _cargando = true;
+    */
     _popularesPage++;
 
+/*
     final url = Uri.https(_url, '3/person/popular', {
       'api_key': _apikey,
       'language': _language,
       'page': _popularesPage.toString()
-    }); // Pelicula
-    final resp = await _procesarRespuesta(url);
+    });
+    */
+    final url = Uri.https(
+        _url, '3/person/popular', {'api_key': _apikey, 'language': _language});
 
+    final resp = await _procesarRespuesta(url);
+/*
     _populares.addAll(resp);
     popularesSink(_populares);
 
     _cargando = false;
+    */
     return resp;
   }
 

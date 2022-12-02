@@ -40,7 +40,8 @@ class PeliculaDetalle extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontSize: 16.0),
         ),
         background: FadeInImage(
-          image: NetworkImage("https://image.tmdb.org/t/p/w500" + pelicula.backdropPath),
+          image: NetworkImage(
+              "https://image.tmdb.org/t/p/w500" + pelicula.backdropPath),
           //image: NetworkImage(pelicula.getBackgroundImg()),
           placeholder: AssetImage('assets/img/loading.gif'),
           //fadeInDuration: Duration(microseconds: 150),
@@ -56,6 +57,7 @@ class PeliculaDetalle extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Hero(
+            // Cuando lo pasas por la pantalla de detalle no tiene uniqueId, asi que hay que asignarsela
             tag: pelicula.uniqueId,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
@@ -70,10 +72,18 @@ class PeliculaDetalle extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(pelicula.title, style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.ellipsis),
-                Text(pelicula.originalTitle, style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.ellipsis),
+                Text(pelicula.title,
+                    style: Theme.of(context).textTheme.bodyText1,
+                    overflow: TextOverflow.ellipsis),
+                Text(pelicula.originalTitle,
+                    style: Theme.of(context).textTheme.bodyText1,
+                    overflow: TextOverflow.ellipsis),
                 Row(
-                  children: <Widget>[Icon(Icons.star_border), Text(pelicula.voteAverage.toString(), style: Theme.of(context).textTheme.bodyText1)],
+                  children: <Widget>[
+                    Icon(Icons.star_border),
+                    Text(pelicula.voteAverage.toString(),
+                        style: Theme.of(context).textTheme.bodyText1)
+                  ],
                 )
               ],
             ),
@@ -100,7 +110,7 @@ class PeliculaDetalle extends StatelessWidget {
       future: peliProvider.getCast(pelicula.id.toString()),
       builder: (context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
-          return _crearActoresPageView(snapshot.data);
+          return _crearActoresPageView(context, snapshot.data);
         } else {
           return Center(child: CircularProgressIndicator());
         }
@@ -108,30 +118,38 @@ class PeliculaDetalle extends StatelessWidget {
     );
   }
 
-  Widget _crearActoresPageView(List<Actor> actores) {
+  Widget _crearActoresPageView(BuildContext context, List<Actor> actores) {
     return SizedBox(
       height: 200.0,
       child: PageView.builder(
         pageSnapping: false,
         controller: PageController(viewportFraction: 0.3, initialPage: 1),
         itemCount: actores.length,
-        itemBuilder: (context, i) => _actorTarjeta(actores[i]),
+        itemBuilder: (context, i) => _actorTarjeta(context, actores[i]),
       ),
     );
   }
 
-  Widget _actorTarjeta(Actor actor) {
+  Widget _actorTarjeta(BuildContext context, Actor actor) {
     return Container(
         child: Column(
       children: <Widget>[
         ClipRRect(
           borderRadius: BorderRadius.circular(20.0),
-          child: FadeInImage(
-            image: NetworkImage(actor.getFoto()),
-            placeholder: AssetImage('assets/img/no-image.jpg'),
-            height: 150.0,
-            fit: BoxFit.cover,
-          ),
+          child: GestureDetector(
+              // para poder ver los actores al clicar
+              onTap: () => {
+                    // le damos un uniqueId para que pueda generar la pagina de detalles
+                    actor.uniqueId = actor.id.toString() + '-tarjeta',
+
+                    Navigator.pushNamed(context, 'actor', arguments: actor)
+                  },
+              child: FadeInImage(
+                image: NetworkImage(actor.getFoto()),
+                placeholder: AssetImage('assets/img/no-image.jpg'),
+                height: 150.0,
+                fit: BoxFit.cover,
+              )),
         ),
         Text(
           actor.name,

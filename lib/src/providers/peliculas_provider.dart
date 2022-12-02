@@ -73,6 +73,17 @@ class PeliculasProvider {
 
     final cast = new Actores.fromJsonList(decodedData['cast']);
 
+    // añadir descripcion
+    for (var i = 0; i < cast.actores.length; i++) {
+      var respDesc = await http.get(Uri.https(
+          _url,
+          '3/person/' + cast.actores[i].id.toString(),
+          {'api_key': _apikey, 'language': _language}));
+      var dataDesc = await json.decode(respDesc.body);
+
+      cast.actores[i].description = dataDesc["biography"];
+    }
+
     return cast.actores;
   }
 

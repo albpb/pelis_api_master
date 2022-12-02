@@ -22,11 +22,11 @@ class CardSwiper extends StatelessWidget {
           actores[index].uniqueId = '${actores[index].id}-tarjeta';
 
           return Hero(
-            tag: actores[index].castId,
+            tag: actores[index].uniqueId,
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
                 child: GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, 'detalle',
+                  onTap: () => Navigator.pushNamed(context, 'actor',
                       arguments: actores[index]),
                   child: FadeInImage(
                     image: NetworkImage(actores[index].getFoto()),

@@ -13,6 +13,41 @@ class HomePage extends StatelessWidget {
     peliculasProvider.getPopulares();
 
     return Scaffold(
+        drawer: Drawer(
+          child: Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  const Text("Menú",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, 'menuactores');
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(top: 30),
+                      padding: EdgeInsets.all(20),
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: Text("Actores"),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, 'menupelis');
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(top: 10),
+                      padding: EdgeInsets.all(20),
+                      width: double.infinity,
+                      color: Colors.grey[100],
+                      child: Text("Peliculas"),
+                    ),
+                  )
+                ],
+              )),
+        ),
         appBar: AppBar(
           centerTitle: true,
           title: Text('Peliculas TMDB'),
@@ -23,7 +58,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 showSearch(
                   context: context,
-                  delegate: DataSearch(),
+                  delegate: MovieSearch(),
                 );
               },
             )
@@ -44,7 +79,8 @@ class HomePage extends StatelessWidget {
         if (snapshot.hasData) {
           return CardSwiper(peliculas: snapshot.data);
         } else {
-          return Container(height: 400.0, child: Center(child: CircularProgressIndicator()));
+          return Container(
+              height: 400.0, child: Center(child: CircularProgressIndicator()));
         }
       },
     );
@@ -56,7 +92,10 @@ class HomePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(padding: EdgeInsets.only(left: 20.0), child: Text('Populares', style: Theme.of(context).textTheme.bodyText1)),
+          Container(
+              padding: EdgeInsets.only(left: 20.0),
+              child: Text('Populares',
+                  style: Theme.of(context).textTheme.bodyText1)),
           SizedBox(height: 5.0),
           StreamBuilder(
             stream: peliculasProvider.popularesStream,
